@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{%block content%}
+<div class="container">
+    <div class="search_box">
+        <form action="{% url 'index' %}" method="POST">
+          {%csrf_token%}
+            <input type="text" name="search" id="search">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+    </div>
+    <div class="main_card d-flex flex-wrap  my-5 ">
+      {% if data %}
+      {% for i in data%}
+        <a href="{% url 'detail' i.imdbID %}">
+          <div class="card m-2" style="width: 18rem;">
+            <img class="card-img-top" src={{i.Poster}} alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title text-center">{{i.Title}}</h5>
+            </div>
+          </div>
+        </a>  
+      {%endfor%}
+     {%else%}
+     <h1 class="text-light">Sorry! Couldn't Find The Movie</h1>
+     {%endif%}
+    
+     </div>
+  
+</div>
+ 
+{%endblock%}

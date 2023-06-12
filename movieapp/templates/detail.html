@@ -1,0 +1,98 @@
+{% extends 'base.html'%}
+{%block content%}
+{% if data %}
+  <div class="container text-light mt-5">
+    <div class="row">
+        <div class="col-md-5">
+        <div class="image">
+        <img src={{data.Poster}} alt="">
+        {%if user.is_authenticated%}
+        <form action="{% url 'rate' data.imdbID %}" method="POST">
+          {%csrf_token%}
+          <h1>Rate</h1>
+          <div class="mb-3 d-flex flex-wrap">
+              
+            <select class="form-select  m-1 w-50"  aria-label="Default select example" name="select" required>
+                <option value="-">-</option>
+                <option value="1">1 (Atrocious)</option>
+                <option value="2">2 (Awful)</option>
+                <option value="3">3 (Bad)</option>
+                <option value="4">4 (Poor)</option>
+                <option value="5">5 (Mediocre)</option>
+                <option value="6">6 (Okay)</option>
+                <option value="7">7 (Good)</option>
+                <option value="8">8 (Great)</option>
+                <option value="9">9 (Incredible)</option>
+                <option value="10">10 (Masterpiece)</option>
+              </select>
+            <button class="btn btn-success" type="submit" name="form1">Save</button>   
+        </div>
+        </form>
+       {%endif%}
+        </div>          
+        </div>
+        <div class="col-md-7">
+              <div class="info">
+                <h1 class="d-flex">
+                  Title: {{data.Title}} 
+                  <form action="{% url 'favourite' %}" class="mx-5" method="POST">
+                    {%csrf_token%}
+                   <input type="hidden" name="id" value="{{data.imdbID}}">
+                   <input type="hidden" name="title" value="{{data.Title}}">
+                   <input type="hidden" name="image" value="{{data.Poster}}">
+                  <button class="btn btn-primary" type="submit">Add to Watch List</button>  
+                  </form>
+                </h1>
+                <p>Released: {{data.Released}}</p>
+                <p>Genre: {{data.Genre}}</p>
+                <p>Writer: {{data.Writer}}</p>
+                <p>Director: {{data.Director}}</p>
+                <p>Actors: {{data.Actors}}</p>
+                <p>Plot: {{data.Plot}}</p>
+                <p>Language: {{data.Language}}</p>
+                <p>Country: {{data.Country}}</p>
+                <p>Awards: {{data.Awards}}</p>
+                <p>Rating: </p>
+                 <ul>
+                    {%for i in data.Ratings%}
+                    <li>{{ i.Source }}: {{ i.Value }}</li>
+                    {%endfor%}
+                    <li>imdb: {{data.imdbRating}}</li>
+                    <li>Your Rating: {{vote}}</li>
+                 </ul> 
+                    <p>Type: {{data.Type}}</p>
+                    <p>DVD: {% if data.DVD %}{{ data.DVD }}{% else %}N/A{% endif %}</p>
+                    <p>Box Office: {% if data.DVD %}{{data.BoxOffice}}{% else %}N/A{% endif %}</p>
+              </div>
+        </div>
+    </div>
+    <br><br> 
+    <div class="comment">
+      <form action="{%url 'comment' data.imdbID%}" method="POST">
+        {%csrf_token%}
+        <input type="text" class="w-100 p-4 my-2" placeholder="Write down your Comment" name="comment" required>
+      <button type="submit" class="btn btn-primary">POST</button>
+      </form>
+      <br>
+    </div>
+    <div class="comment_area">
+         {% if comment %}
+           {% for i in comment%}
+             <div class="area bg-light text-dark p-1">
+              <h2>@{{i.username}}</h2>
+              <p>{{i.comment}} <br> {{i.created_at}}</p>
+              {% if user.is_authenticated %}
+              {% if i.username == user.username %} 
+              <form action="{%url 'delete' i.id data.imdbID %}" method="POST">
+                  {%csrf_token%}  
+                <input type="submit" value="Delete">
+               </form>
+               {%endif%}
+               {%endif%}
+             </div><br>
+          {%endfor%}
+         {%endif%}
+    </div>
+  </div>
+{%endif%}
+{%endblock%}
